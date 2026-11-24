@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CLEANLAB — Клининг и Химчистка в Туркестане</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Manrope -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Manrope', 'Plus Jakarta Sans', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Manrope', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#F0F9FF',
+              100: '#E0F2FE',
+              200: '#BAE6FD',
+              500: '#0EA5E9',
+              600: '#0284C7',
+              700: '#0369A1',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ============================================================
+       BASE & GLASSMORPHISM
+       ============================================================ */
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      background-color: #F9FAFB;
+      color: #111827;
+      font-family: 'Manrope', sans-serif;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 10px 32px -8px rgba(15, 23, 42, 0.06);
+    }
+
+    .glass-header {
+      background: rgba(249, 250, 251, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+    }
+
+    /* ============================================================
+       1. WHITE LAVA LAMP BACKGROUND + SCROLL-LINKED BLACK CIRCLES
+       ============================================================ */
+    #lava-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 0%, #FFFFFF 0%, #F9FAFB 60%, #F3F4F6 100%);
+    }
+
+    .lava-orb {
+      position: absolute;
+      border-radius: 9999px;
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .lava-orb-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 9999px;
+      animation: lavaFloat var(--float-dur, 18s) ease-in-out infinite alternate;
+    }
+
+    @keyframes lavaFloat {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(var(--dx, 18px), var(--dy, -22px), 0) scale(1.07);
+      }
+      100% {
+        transform: translate3d(calc(var(--dx, 18px) * -0.7), calc(var(--dy, -22px) * -0.6), 0) scale(0.95);
+      }
+    }
+
+    /* ============================================================
+       2. SIDE SOAP FOAM & MOVING IRIDESCENT BUBBLES
+       ============================================================ */
+    .foam-rail {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 60px;
+      z-index: 15;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .foam-rail.left-rail {
+      left: 0;
+    }
+
+    .foam-rail.right-rail {
+      right: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .foam-rail {
+        width: 34px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .foam-rail {
+        width: 18px;
+      }
+    }
+
+    /* Flowing vertical foam stream */
+    .foam-stream {
+      position: absolute;
+      top: -120px;
+      width: 100%;
+      height: calc(100vh + 240px);
+      animation: foamDrift 20s linear infinite;
+      will-change: transform;
+    }
+
+    .right-rail .foam-stream {
+      animation-duration: 24s;
+      animation-delay: -7s;
+    }
+
+    @keyframes foamDrift {
+      0% {
+        transform: translateY(-100px);
+      }
+      100% {
+        transform: translateY(100px);
+      }
+    }
+
+    /* Individual glossy white soap foam puffs */
+    .foam-puff {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 35% 30%,
+        rgba(255, 255, 255, 0.96) 0%,
+        rgba(240, 249, 255, 0.85) 52%,
+        rgba(224, 242, 254, 0.55) 85%,
+        rgba(186, 230, 253, 0.25) 100%
+      );
+      border: 1px solid rgba(255, 255, 255, 0.92);
+      box-shadow:
+        inset -4px -5px 10px rgba(14, 165, 233, 0.12),
+        inset 3px 3px 8px rgba(255, 255, 255, 1),
+        0 4px 12px rgba(15, 23, 42, 0.05);
+      animation: puffPulse var(--pulse-dur, 6s) ease-in-out infinite alternate;
+    }
+
+    @keyframes puffPulse {
+      0% { transform: scale(0.95) translateX(0px); }
+      100% { transform: scale(1.06) translateX(var(--sway, 4px)); }
+    }
+
+    /* Iridescent rising soap bubbles */
+    .soap-bubble {
+      position: absolute;
+      bottom: -45px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 28% 28%,
+        rgba(255, 255, 255, 0.98) 0%,
+        rgba(255, 255, 255, 0.35) 22%,
+        rgba(186, 230, 253, 0.22) 55%,
+        rgba(232, 121, 249, 0.14) 80%,
+        rgba(14, 165, 233, 0.28) 100%
+      );
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow:
+        inset -2px -3px 6px rgba(14, 165, 233, 0.25),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.95),
+        0 2px 8px rgba(14, 165, 233, 0.12);
+      animation: bubbleRise var(--rise-dur, 11s) linear infinite;
+      will-change: transform, opacity;
+    }
+
+    .soap-bubble::after {
+      content: '';
+      position: absolute;
+      top: 18%;
+      left: 20%;
+      width: 28%;
+      height: 18%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.92);
+      transform: rotate(-30deg);
+    }
+
+    @keyframes bubbleRise {
+      0% {
+        transform: translateY(0) translateX(0) scale(0.85);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.92;
+      }
+      50% {
+        transform: translateY(-52vh) translateX(var(--drift, 12px)) scale(1.03);
+        opacity: 0.88;
+      }
+      88% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-112vh) translateX(calc(var(--drift, 12px) * -0.8)) scale(1.08);
+        opacity: 0;
+      }
+    }
+
+    /* ============================================================
+       CUSTOM RANGE SLIDER & CONTROLS
+       ============================================================ */
+    input[type="range"].clean-range {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #E2E8F0;
+      outline: none;
+    }
+
+    input[type="range"].clean-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #0EA5E9;
+      border: 3px solid #FFFFFF;
+      box-shadow: 0 2px 10px rgba(14, 165, 233, 0.45);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"].clean-range::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+    }
+
+    /* Celebration bubbles on checkout */
+    .celebration-bubble {
+      position: fixed;
+      bottom: -30px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 100;
+      background: radial-gradient(circle at 30% 30%, #ffffff 0%, rgba(14, 165, 233, 0.35) 60%, rgba(168, 85, 247, 0.25) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      animation: popUp 2.6s ease-out forwards;
+    }
+
+    @keyframes popUp {
+      0% { transform: translateY(0) scale(0.6); opacity: 0.95; }
+      75% { opacity: 0.85; }
+      100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
+    }
+
+    /* Toast animation */
+    .toast-enter {
+      animation: toastSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes toastSlide {
+      from { opacity: 0; transform: translateY(16px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-brand-100 selection:text-brand-700">
+
+  <!-- ============================================================
+       BACKGROUND LAYER: WHITE LAVA LAMP WITH BLACK BLURRED ORBS
+       ============================================================ -->
+  <div id="lava-bg" aria-hidden="true">
+    <div class="lava-orb" data-speed="0.06" style="top: 4%; left: 10%; width: 260px; height: 260px;">
+      <div class="lava-orb-inner" style="background: rgba(15, 18, 24, 0.10); filter: blur(34px); --float-dur: 19s; --dx: 24px; --dy: -20px;"></div>
+    </div>
+    <div class="lava-orb" data-speed="-0.05" style="top: 16%; right: 12%; width: 310px; height: 310px;">
+      <div class="lava-orb-inner" style="background: rgba(15, 18, 24, 0.13); filter: blur(40px); --float-dur: 23s; --dx: -26px; --dy: 22px;"></div>
+    </div>
+    <div class="lava-orb" data-speed="0.08" style="top: 38%; left: 26%; width: 170px; height: 170px;">
+      <div class="lava-orb-inner" style="background: rgba(15, 18, 24, 0.09); filter: blur(26px); --float-dur: 16s; --dx: 20px; --dy: 18px;"></div>
+    </div>
+    <div class="lava-orb" data-speed="-0.07" style="top: 46%; right: 22%; width: 220px; height: 220px;">
+      <div class="lava-orb-inner" style="background: rgba(15, 18, 24, 0.14); filter: blur(32px); --float-dur: 21s; --dx: -18px; --dy: -24px;"></div>
+    </div>
+    <div class="lava-orb" data-speed="0.05" style="top: 64%; left: 8%; width: 290px; height: 290px;">
+      <div class="lava-orb-inner" style="background: rgba(15, 18, 24, 0.11); filter: blur(38px); --float-dur: 25s; --dx: 22px; --dy: -16px;"></div>
+    </div>
+    <div class="lava-orb" data-speed="-0.06" style="top: 76%; right: 14%; width: 145px; height: 145px;">
+      <div class="lava-orb-inner" style="background: rgba(15, 18, 24, 0.15); filter: blur(24px); --float-dur: 17s; --dx: -20px; --dy: 16px;"></div>
+    </div>
+    <div class="lava-orb" data-speed="0.07" style="top: 86%; left: 46%; width: 210px; height: 210px;">
+      <div class="lava-orb-inner" style="background: rgba(15, 18, 24, 0.09); filter: blur(34px); --float-dur: 22s; --dx: 16px; --dy: -22px;"></div>
+    </div>
+    <div class="lava-orb" data-speed="-0.04" style="top: 26%; left: 62%; width: 120px; height: 120px;">
+      <div class="lava-orb-inner" style="background: rgba(15, 18, 24, 0.12); filter: blur(25px); --float-dur: 15s; --dx: -15px; --dy: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       LEFT & RIGHT FLOWING SOAP FOAM + MOVING BUBBLES
+       ============================================================ -->
+  <div id="left-foam-rail" class="foam-rail left-rail" aria-hidden="true"></div>
+  <div id="right-foam-rail" class="foam-rail right-rail" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       STICKY GLASS HEADER
+       ============================================================ -->
+  <header class="glass-header sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+      <!-- Brand Logo -->
+      <a href="#top" class="flex items-center gap-2.5 group">
+        <div class="w-10 h-10 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-sm group-hover:bg-brand-600 transition-colors">
+          <!-- Sparkle / Bubble SVG Icon -->
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="10" cy="14" r="6" class="stroke-brand-200"></circle>
+            <circle cx="8" cy="12" r="1.2" fill="currentColor" stroke="none"></circle>
+            <path d="M18 3l.8 2.2L21 6l-2.2.8L18 9l-.8-2.2L15 6l2.2-.8L18 3z" fill="currentColor" stroke="none"></path>
+          </svg>
+        </div>
+        <div class="leading-tight">
+          <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-gray-900">CLEAN<span class="text-brand-600">LAB</span></span>
+          <span class="block text-[11px] font-medium text-gray-500 hidden sm:block" data-i18n="header_sub">Туркестан · Клининг и Химчистка</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-gray-700">
+        <a href="#services" class="hover:text-brand-600 transition-colors" data-i18n="nav_services">Услуги</a>
+        <a href="#calculator" class="hover:text-brand-600 transition-colors" data-i18n="nav_calc">Калькулятор</a>
+        <a href="#how-it-works" class="hover:text-brand-600 transition-colors" data-i18n="nav_how">Как работаем</a>
+        <a href="#location" class="hover:text-brand-600 transition-colors" data-i18n="nav_address">Адрес</a>
+        <a href="#faq" class="hover:text-brand-600 transition-colors" data-i18n="nav_faq">FAQ</a>
+      </nav>
+
+      <!-- Right Controls: Language Switcher + Order Drawer Button -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- RU / KZ Switcher -->
+        <div class="inline-flex rounded-xl bg-gray-100/90 p-1 border border-gray-200">
+          <button id="btn-lang-ru" onclick="setLanguage('RU')" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all bg-white text-gray-900 shadow-sm">RU</button>
+          <button id="btn-lang-kz" onclick="setLanguage('KZ')" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-900">KZ</button>
+        </div>
+
+        <!-- Cart / Order Drawer Trigger -->
+        <button onclick="openCart()" class="relative inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gray-900 hover:bg-brand-600 text-white text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <span class="hidden sm:inline" data-i18n="cart_btn">Заказ</span>
+          <span id="cart-badge" class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-extrabold rounded-full bg-brand-500 text-white">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MAIN CONTENT CONTAINER
+       ============================================================ -->
+  <main id="top" class="relative z-20 max-w-6xl mx-auto px-5 sm:px-10 md:px-14 pb-20">
+
+    <!-- ======================== HERO SECTION ======================== -->
+    <section class="pt-10 sm:pt-14 pb-12">
+      <div class="glass-card rounded-3xl p-6 sm:p-10 md:p-12">
+        <!-- Location Badge -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs sm:text-sm font-bold mb-6">
+          <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+          <span data-i18n="hero_badge">г. Туркестан · Жаңа қала, 9, 42/2</span>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="font-display font-extrabold text-3xl sm:text-5xl lg:text-[54px] tracking-tight text-gray-900 leading-[1.1] max-w-4xl mb-6" data-i18n="hero_title">
+          Идеальная чистота дома, мебели, одежды и обуви
+        </h1>
+
+        <!-- Two Service Formats Clearly Highlighted -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div class="rounded-2xl bg-brand-50/75 border border-brand-100 p-4 sm:p-5 flex items-start gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-sm font-extrabold text-gray-900 mb-1" data-i18n="hero_fmt1_title">Выездная бригада по всему Туркестану</div>
+              <p class="text-xs sm:text-sm text-gray-600 leading-relaxed" data-i18n="hero_fmt1_desc">Профессиональный клининг квартир и домов, а также глубинная химчистка диванов, матрасов и ковров прямо у вас дома.</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-gray-900 text-white p-4 sm:p-5 flex items-start gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-white/15 text-brand-200 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-sm font-extrabold text-white mb-1" data-i18n="hero_fmt2_title">В нашем сервисе · Жаңа қала, 9, 42/2</div>
+              <p class="text-xs sm:text-sm text-gray-300 leading-relaxed" data-i18n="hero_fmt2_desc">Бережная химчистка верхней одежды, костюмов, кроссовок, зимней обуви и сумок с водоотталкивающей пропиткой.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap items-center gap-3.5 mb-8">
+          <a href="#calculator" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm sm:text-base shadow-lg shadow-brand-500/25 transition-all active:scale-95">
+            <span data-i18n="hero_cta1">Рассчитать стоимость</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </a>
+          <a href="#services" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 font-bold text-sm sm:text-base transition-all active:scale-95">
+            <span data-i18n="hero_cta2">Выбрать услуги</span>
+          </a>
+        </div>
+
+        <!-- Quick Trust Stats Bar -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-6 border-t border-gray-200/80">
+          <div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-gray-800">
+            <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">🌿</span>
+            <span data-i18n="trust_1">Эко-химия 0+</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-gray-800">
+            <span class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">⚡</span>
+            <span data-i18n="trust_2">Выезд за 60 мин</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-gray-800">
+            <span class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">⚙️</span>
+            <span data-i18n="trust_3">Оборудование Kärcher</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-gray-800">
+            <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">🛡️</span>
+            <span data-i18n="trust_4">Гарантия чистоты</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== INTERACTIVE PRICE CALCULATOR ======================== -->
+    <section id="calculator" class="py-10 scroll-mt-20">
+      <div class="mb-6">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600" data-i18n="calc_eyebrow">Онлайн-калькулятор</span>
+        <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-gray-900 mt-1" data-i18n="calc_heading">Узнайте точную стоимость за 30 секунд</h2>
+      </div>
+
+      <div class="glass-card rounded-3xl p-5 sm:p-8">
+        <!-- 3 Calculator Tabs -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-1.5 bg-gray-100/90 rounded-2xl mb-7">
+          <button onclick="switchCalcTab('home')" id="calc-tab-home" class="calc-tab-btn px-4 py-3 rounded-xl text-sm font-bold transition-all bg-white text-gray-900 shadow-sm" data-i18n="calc_tab1">
+            🏠 Клининг дома (Выезд)
+          </button>
+          <button onclick="switchCalcTab('furniture')" id="calc-tab-furniture" class="calc-tab-btn px-4 py-3 rounded-xl text-sm font-bold transition-all text-gray-600 hover:text-gray-900" data-i18n="calc_tab2">
+            🛋️ Мебель и ковры (Выезд)
+          </button>
+          <button onclick="switchCalcTab('clothes')" id="calc-tab-clothes" class="calc-tab-btn px-4 py-3 rounded-xl text-sm font-bold transition-all text-gray-600 hover:text-gray-900" data-i18n="calc_tab3">
+            👟 Одежда и обувь (В сервисе)
+          </button>
+        </div>
+
+        <!-- TAB 1: HOME CLEANING -->
+        <div id="calc-panel-home" class="space-y-6">
+          <!-- Area Slider -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <label for="area-slider" class="text-sm font-bold text-gray-700" data-i18n="calc_area_label">Площадь квартиры или дома</label>
+              <span class="px-3.5 py-1 rounded-xl bg-brand-50 text-brand-700 font-extrabold text-base">
+                <span id="area-value">75</span> м²
+              </span>
+            </div>
+            <input id="area-slider" type="range" min="30" max="250" step="5" value="75" class="clean-range" oninput="updateHomeCalc()" />
+            <div class="flex justify-between text-xs font-semibold text-gray-400 mt-2">
+              <span>30 м²</span>
+              <span>140 м²</span>
+              <span>250 м²</span>
+            </div>
+          </div>
+
+          <!-- Cleaning Type Radio Cards -->
+          <div>
+            <div class="text-sm font-bold text-gray-700 mb-3" data-i18n="calc_type_label">Тип уборки</div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <label class="cursor-pointer">
+                <input type="radio" name="clean-type" value="450" data-key="maintenance" class="peer sr-only" checked onchange="updateHomeCalc()" />
+                <div class="p-4 rounded-2xl border-2 border-gray-200 bg-white/80 peer-checked:border-brand-500 peer-checked:bg-brand-50/50 transition-all">
+                  <div class="font-bold text-gray-900 text-sm sm:text-base" data-i18n="type_maint">Поддерживающая</div>
+                  <div class="text-brand-600 font-extrabold text-sm mt-1">450 ₸ / м²</div>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="clean-type" value="800" data-key="general" class="peer sr-only" onchange="updateHomeCalc()" />
+                <div class="p-4 rounded-2xl border-2 border-gray-200 bg-white/80 peer-checked:border-brand-500 peer-checked:bg-brand-50/50 transition-all">
+                  <div class="font-bold text-gray-900 text-sm sm:text-base" data-i18n="type_gen">Генеральная</div>
+                  <div class="text-brand-600 font-extrabold text-sm mt-1">800 ₸ / м²</div>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="clean-type" value="1100" data-key="repair" class="peer sr-only" onchange="updateHomeCalc()" />
+                <div class="p-4 rounded-2xl border-2 border-gray-200 bg-white/80 peer-checked:border-brand-500 peer-checked:bg-brand-50/50 transition-all">
+                  <div class="font-bold text-gray-900 text-sm sm:text-base" data-i18n="type_repair">После ремонта</div>
+                  <div class="text-brand-600 font-extrabold text-sm mt-1">1 100 ₸ / м²</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Extra Options Checkboxes -->
+          <div>
+            <div class="text-sm font-bold text-gray-700 mb-3" data-i18n="calc_extras_label">Дополнительные опции</div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <label class="flex items-center justify-between gap-2 p-3.5 rounded-2xl border border-gray-200 bg-white/85 cursor-pointer hover:border-brand-300 transition-colors">
+                <span class="flex items-center gap-2.5 text-sm font-semibold text-gray-800">
+                  <input type="checkbox" class="home-extra w-4 h-4 accent-brand-600 rounded" value="6000" data-label-ru="Мытьё окон" data-label-kz="Терезе жуу" onchange="updateHomeCalc()" />
+                  <span data-i18n="extra_windows">Мытьё окон</span>
+                </span>
+                <span class="text-xs font-extrabold text-brand-600 whitespace-nowrap">+6 000 ₸</span>
+              </label>
+              <label class="flex items-center justify-between gap-2 p-3.5 rounded-2xl border border-gray-200 bg-white/85 cursor-pointer hover:border-brand-300 transition-colors">
+                <span class="flex items-center gap-2.5 text-sm font-semibold text-gray-800">
+                  <input type="checkbox" class="home-extra w-4 h-4 accent-brand-600 rounded" value="3500" data-label-ru="Внутри холодильника" data-label-kz="Тоңазытқыш іші" onchange="updateHomeCalc()" />
+                  <span data-i18n="extra_fridge">Внутри холодильника</span>
+                </span>
+                <span class="text-xs font-extrabold text-brand-600 whitespace-nowrap">+3 500 ₸</span>
+              </label>
+              <label class="flex items-center justify-between gap-2 p-3.5 rounded-2xl border border-gray-200 bg-white/85 cursor-pointer hover:border-brand-300 transition-colors">
+                <span class="flex items-center gap-2.5 text-sm font-semibold text-gray-800">
+                  <input type="checkbox" class="home-extra w-4 h-4 accent-brand-600 rounded" value="4000" data-label-ru="Духовка/вытяжка" data-label-kz="Пеш/сорғыш" onchange="updateHomeCalc()" />
+                  <span data-i18n="extra_oven">Духовка/вытяжка</span>
+                </span>
+                <span class="text-xs font-extrabold text-brand-600 whitespace-nowrap">+4 000 ₸</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Home Calc Footer -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-5 border-t border-gray-200">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-gray-500" data-i18n="calc_total_label">Предварительный расчёт</span>
+              <div id="home-calc-total" class="font-display font-extrabold text-3xl text-gray-900">33 750 ₸</div>
+            </div>
+            <button onclick="addHomeCalcToCart()" class="px-6 py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm sm:text-base shadow-md shadow-brand-500/20 transition-all active:scale-95" data-i18n="calc_add_btn">
+              + Добавить расчёт в заказ
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 2: FURNITURE & CARPETS -->
+        <div id="calc-panel-furniture" class="hidden space-y-5">
+          <div id="furniture-stepper-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-5 border-t border-gray-200">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-gray-500" data-i18n="calc_total_label">Предварительный расчёт</span>
+              <div id="furniture-calc-total" class="font-display font-extrabold text-3xl text-gray-900">0 ₸</div>
+            </div>
+            <button onclick="addStepperCalcToCart('furniture')" class="px-6 py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm sm:text-base shadow-md shadow-brand-500/20 transition-all active:scale-95" data-i18n="calc_add_items_btn">
+              + Добавить в заказ
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 3: CLOTHES & SHOES -->
+        <div id="calc-panel-clothes" class="hidden space-y-5">
+          <div class="rounded-2xl bg-gray-900 text-white px-4 py-3 text-xs sm:text-sm font-medium flex items-center gap-2.5">
+            <span>📍</span>
+            <span data-i18n="clothes_notice">Приём одежды и обуви осуществляется в нашем сервисе по адресу: г. Туркестан, Жаңа қала, 9, 42/2.</span>
+          </div>
+          <div id="clothes-stepper-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-5 border-t border-gray-200">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-gray-500" data-i18n="calc_total_label">Предварительный расчёт</span>
+              <div id="clothes-calc-total" class="font-display font-extrabold text-3xl text-gray-900">0 ₸</div>
+            </div>
+            <button onclick="addStepperCalcToCart('clothes')" class="px-6 py-3.5 rounded-2xl bg-gray-900 hover:bg-brand-600 text-white font-bold text-sm sm:text-base shadow-md transition-all active:scale-95" data-i18n="calc_add_items_btn">
+              + Добавить в заказ
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== SERVICES CATALOG ======================== -->
+    <section id="services" class="py-10 scroll-mt-20">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+        <div>
+          <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600" data-i18n="serv_eyebrow">Прайс-лист и услуги</span>
+          <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-gray-900 mt-1" data-i18n="serv_heading">Каталог услуг CLEANLAB</h2>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="flex flex-wrap gap-2">
+          <button onclick="filterServices('all')" id="filter-all" class="filter-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gray-900 text-white transition-all" data-i18n="filter_all">Все</button>
+          <button onclick="filterServices('home')" id="filter-home" class="filter-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/85 text-gray-700 border border-gray-200 hover:border-brand-400 transition-all" data-i18n="filter_home">Клининг (Выезд)</button>
+          <button onclick="filterServices('furniture')" id="filter-furniture" class="filter-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/85 text-gray-700 border border-gray-200 hover:border-brand-400 transition-all" data-i18n="filter_furniture">Мебель и ковры (Выезд)</button>
+          <button onclick="filterServices('clothes')" id="filter-clothes" class="filter-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/85 text-gray-700 border border-gray-200 hover:border-brand-400 transition-all" data-i18n="filter_clothes">Одежда и обувь (В сервисе)</button>
+        </div>
+      </div>
+
+      <div id="services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+    <!-- ======================== HOW WE WORK (4 STEPS) ======================== -->
+    <section id="how-it-works" class="py-10 scroll-mt-20">
+      <div class="mb-6">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600" data-i18n="how_eyebrow">Простой процесс</span>
+        <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-gray-900 mt-1" data-i18n="how_heading">Как мы работаем</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 font-display font-extrabold flex items-center justify-center mb-4">01</div>
+          <h3 class="font-bold text-gray-900 text-base mb-2" data-i18n="step1_t">Заявка или расчёт</h3>
+          <p class="text-sm text-gray-600 leading-relaxed" data-i18n="step1_d">Выберите нужные услуги в каталоге или посчитайте точную сумму в калькуляторе за 30 секунд.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 font-display font-extrabold flex items-center justify-center mb-4">02</div>
+          <h3 class="font-bold text-gray-900 text-base mb-2" data-i18n="step2_t">Выезд или приём</h3>
+          <p class="text-sm text-gray-600 leading-relaxed" data-i18n="step2_d">Бригада выезжает к вам домой (клининг, мебель, ковры) или вы приносите вещи в сервис на Жаңа қала, 9, 42/2.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 font-display font-extrabold flex items-center justify-center mb-4">03</div>
+          <h3 class="font-bold text-gray-900 text-base mb-2" data-i18n="step3_t">Глубокая чистка</h3>
+          <p class="text-sm text-gray-600 leading-relaxed" data-i18n="step3_d">Работаем техникой Kärcher и сертифицированной гипоаллергенной эко-химией, безопасной для детей и питомцев.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 font-display font-extrabold flex items-center justify-center mb-4">04</div>
+          <h3 class="font-bold text-gray-900 text-base mb-2" data-i18n="step4_t">Проверка и оплата</h3>
+          <p class="text-sm text-gray-600 leading-relaxed" data-i18n="step4_d">Вы проверяете чистоту каждой детали и оплачиваете заказ только после приёмки результата.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== LOCATION, MAP & CONTACTS ======================== -->
+    <section id="location" class="py-10 scroll-mt-20">
+      <div class="mb-6">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600" data-i18n="loc_eyebrow">Контакты в Туркестане</span>
+        <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-gray-900 mt-1" data-i18n="loc_heading">Наш сервис и зона выезда</h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <!-- Info Card -->
+        <div class="lg:col-span-2 glass-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between space-y-5">
+          <div class="space-y-4">
+            <h3 class="font-display font-extrabold text-2xl text-gray-900">CLEAN<span class="text-brand-600">LAB</span> Turkestan</h3>
+
+            <div class="space-y-2.5 text-sm text-gray-700">
+              <div class="flex items-start gap-3">
+                <span class="text-lg">📍</span>
+                <div>
+                  <div class="font-bold text-gray-900" data-i18n="loc_addr">г. Туркестан, мкр. Жаңа қала, 9, 42/2</div>
+                  <div class="text-xs text-gray-500 mt-0.5" data-i18n="loc_addr_note">Пункт приёма одежды, обуви и сумок</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-lg">🚐</span>
+                <div class="text-xs sm:text-sm text-gray-600" data-i18n="loc_mobile_note">Выездная бригада по всему Туркестану: клининг квартир/домов, химчистка мебели и ковров.</div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-lg">🕒</span>
+                <span class="font-semibold" data-i18n="loc_hours">Ежедневно с 09:00 до 21:00</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-lg">📞</span>
+                <a href="tel:+77005553535" class="font-extrabold text-gray-900 hover:text-brand-600 transition-colors">+7 (700) 555-35-35</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 flex flex-col sm:flex-row gap-2.5">
+            <a href="https://wa.me/77005553535?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D1%87%D0%B8%D1%81%D1%82%D0%BA%D1%83%20%D0%B2%20CLEANLAB." target="_blank" rel="noopener noreferrer" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition-colors">
+              <span>WhatsApp</span>
+            </a>
+            <button onclick="openCart()" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gray-900 hover:bg-brand-600 text-white font-bold text-sm transition-colors" data-i18n="loc_order_btn">
+              Оставить заявку
+            </button>
+          </div>
+        </div>
+
+        <!-- Embedded OpenStreetMap -->
+        <div class="lg:col-span-3 glass-card rounded-3xl overflow-hidden min-h-[300px] sm:min-h-[340px]">
+          <iframe
+            title="Карта CLEANLAB Туркестан"
+            class="w-full h-full min-h-[300px] sm:min-h-[340px] border-0"
+            loading="lazy"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=68.2317%2C43.2873%2C68.2717%2C43.3073&amp;layer=mapnik&amp;marker=43.2973%2C68.2517">
+          </iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== FAQ ACCORDION ======================== -->
+    <section id="faq" class="py-10 scroll-mt-20">
+      <div class="mb-6">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600">FAQ</span>
+        <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-gray-900 mt-1" data-i18n="faq_heading">Популярные вопросы</h2>
+      </div>
+      <div id="faq-list" class="space-y-3"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="pt-8 mt-6 border-t border-gray-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+      <div>© 2026 CLEANLAB · г. Туркестан, мкр. Жаңа қала, 9, 42/2</div>
+      <div class="font-semibold text-gray-600" data-i18n="footer_promo">Промокод на первый заказ: <span class="text-brand-600 font-extrabold">CLEAN10</span> (−10%)</div>
+    </footer>
+  </main>
+
+  <!-- ============================================================
+       SLIDE-OUT ORDER DRAWER (CART)
+       ============================================================ -->
+  <div id="cart-backdrop" onclick="closeCart()" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+
+  <aside id="cart-drawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+    <!-- Drawer Header -->
+    <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+      <div>
+        <h2 class="font-display font-extrabold text-xl text-gray-900" data-i18n="drawer_title">Ваш заказ</h2>
+        <p class="text-xs text-gray-500" data-i18n="drawer_sub">Промокод CLEAN10 даёт скидку 10%</p>
+      </div>
+      <button onclick="closeCart()" class="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 font-bold transition-colors" aria-label="Закрыть">✕</button>
+    </div>
+
+    <!-- Drawer Scrollable Body -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-5">
+      <div id="cart-items-container"></div>
+
+      <!-- Promo Code -->
+      <div id="cart-promo-section" class="hidden pt-4 border-t border-gray-100">
+        <div class="flex gap-2">
+          <input id="promo-input" type="text" placeholder="CLEAN10" class="flex-1 px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-brand-500 uppercase" />
+          <button onclick="applyPromo()" class="px-4 py-2.5 rounded-xl bg-gray-900 hover:bg-brand-600 text-white text-xs font-bold transition-colors" data-i18n="promo_apply">Применить</button>
+        </div>
+        <div id="promo-msg" class="text-xs font-semibold mt-2 hidden"></div>
+      </div>
+
+      <!-- Totals -->
+      <div id="cart-totals-section" class="hidden space-y-1.5 pt-3 border-t border-gray-100">
+        <div id="cart-discount-row" class="hidden flex justify-between text-sm font-semibold text-emerald-600">
+          <span data-i18n="discount_label">Скидка (10%)</span>
+          <span id="cart-discount-val">−0 ₸</span>
+        </div>
+        <div class="flex justify-between items-baseline">
+          <span class="text-sm font-bold text-gray-600" data-i18n="total_label">Итого к оплате</span>
+          <span id="cart-total-val" class="font-display font-extrabold text-2xl text-gray-900">0 ₸</span>
+        </div>
+      </div>
+
+      <!-- Customer Checkout Form -->
+      <form id="checkout-form" onsubmit="submitOrder(event)" class="hidden space-y-3 pt-4 border-t border-gray-100">
+        <input id="cust-name" type="text" required class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-500" placeholder="Ваше имя" />
+        <input id="cust-phone" type="tel" required class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-500" placeholder="Телефон / WhatsApp (+7 ...)" />
+        <textarea id="cust-address" rows="2" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-500 resize-none" placeholder="Адрес выезда или комментарий"></textarea>
+        <div id="form-error" class="hidden text-xs font-bold text-rose-600"></div>
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-sm shadow-lg shadow-brand-500/25 transition-all active:scale-95" data-i18n="checkout_btn">
+          Оформить заявку
+        </button>
+      </form>
+
+      <!-- Order Success Message -->
+      <div id="order-success-box" class="hidden rounded-2xl bg-emerald-50 border border-emerald-200 p-6 text-center space-y-3">
+        <div class="w-12 h-12 rounded-full bg-emerald-500 text-white mx-auto flex items-center justify-center text-2xl">✓</div>
+        <h3 class="font-display font-extrabold text-lg text-gray-900" data-i18n="success_title">Заявка принята!</h3>
+        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed" data-i18n="success_desc">Менеджер CLEANLAB свяжется с вами в течение 10 минут для подтверждения времени.</p>
+        <button onclick="resetAfterSuccess()" class="px-5 py-2.5 rounded-xl bg-gray-900 text-white text-xs font-bold" data-i18n="success_close">Вернуться на сайт</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Floating Toast Container -->
+  <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none space-y-2"></div>
+
+  <!-- ============================================================
+       APPLICATION JAVASCRIPT
+       ============================================================ -->
+  <script>
+    /* ------------------------------------------------------------
+       1. DATA & TRANSLATIONS (RU / KZ)
+       ------------------------------------------------------------ */
+    let currentLang = 'RU';
+    let currentFilter = 'all';
+    let cart = [];
+    let promoActive = false;
+
+    const I18N = {
+      RU: {
+        header_sub: 'Туркестан · Клининг и Химчистка',
+        nav_services: 'Услуги',
+        nav_calc: 'Калькулятор',
+        nav_how: 'Как работаем',
+        nav_address: 'Адрес',
+        nav_faq: 'FAQ',
+        cart_btn: 'Заказ',
+        hero_badge: 'г. Туркестан · Жаңа қала, 9, 42/2',
+        hero_title: 'Идеальная чистота дома, мебели, одежды и обуви',
+        hero_fmt1_title: 'Выездная бригада по всему Туркестану',
+        hero_fmt1_desc: 'Профессиональный клининг квартир и домов, а также глубинная химчистка диванов, матрасов и ковров прямо у вас дома.',
+        hero_fmt2_title: 'В нашем сервисе · Жаңа қала, 9, 42/2',
+        hero_fmt2_desc: 'Бережная химчистка верхней одежды, костюмов, кроссовок, зимней обуви и сумок с водоотталкивающей пропиткой.',
+        hero_cta1: 'Рассчитать стоимость',
+        hero_cta2: 'Выбрать услуги',
+        trust_1: 'Эко-химия 0+',
+        trust_2: 'Выезд за 60 мин',
+        trust_3: 'Оборудование Kärcher',
+        trust_4: 'Гарантия чистоты',
+        calc_eyebrow: 'Онлайн-калькулятор',
+        calc_heading: 'Узнайте точную стоимость за 30 секунд',
+        calc_tab1: '🏠 Клининг дома (Выезд)',
+        calc_tab2: '🛋️ Мебель и ковры (Выезд)',
+        calc_tab3: '👟 Одежда и обувь (В сервисе)',
+        calc_area_label: 'Площадь квартиры или дома',
+        calc_type_label: 'Тип уборки',
+        type_maint: 'Поддерживающая',
+        type_gen: 'Генеральная',
+        type_repair: 'После ремонта',
+        calc_extras_label: 'Дополнительные опции',
+        extra_windows: 'Мытьё окон',
+        extra_fridge: 'Внутри холодильника',
+        extra_oven: 'Духовка/вытяжка',
+        calc_total_label: 'Предварительный расчёт',
+        calc_add_btn: '+ Добавить расчёт в заказ',
+        calc_add_items_btn: '+ Добавить в заказ',
+        clothes_notice: 'Приём одежды и обуви осуществляется в нашем сервисе по адресу: г. Туркестан, Жаңа қала, 9, 42/2.',
+        serv_eyebrow: 'Прайс-лист и услуги',
+        serv_heading: 'Каталог услуг CLEANLAB',
+        filter_all: 'Все',
+        filter_home: 'Клининг (Выезд)',
+        filter_furniture: 'Мебель и ковры (Выезд)',
+        filter_clothes: 'Одежда и обувь (В сервисе)',
+        badge_mobile: 'Выезд на дом',
+        badge_service: 'В сервисе',
+        add_to_order: '+ В заказ',
+        how_eyebrow: 'Простой процесс',
+        how_heading: 'Как мы работаем',
+        step1_t: 'Заявка или расчёт',
+        step1_d: 'Выберите нужные услуги в каталоге или посчитайте точную сумму в калькуляторе за 30 секунд.',
+        step2_t: 'Выезд или приём',
+        step2_d: 'Бригада выезжает к вам домой (клининг, мебель, ковры) или вы приносите вещи в сервис на Жаңа қала, 9, 42/2.',
+        step3_t: 'Глубокая чистка',
+        step3_d: 'Работаем техникой Kärcher и сертифицированной гипоаллергенной эко-химией, безопасной для детей и питомцев.',
+        step4_t: 'Проверка и оплата',
+        step4_d: 'Вы проверяете чистоту каждой детали и оплачиваете заказ только после приёмки результата.',
+        loc_eyebrow: 'Контакты в Туркестане',
+        loc_heading: 'Наш сервис и зона выезда',
+        loc_addr: 'г. Туркестан, мкр. Жаңа қала, 9, 42/2',
+        loc_addr_note: 'Пункт приёма одежды, обуви и сумок',
+        loc_mobile_note: 'Выездная бригада по всему Туркестану: клининг квартир/домов, химчистка мебели и ковров.',
+        loc_hours: 'Ежедневно с 09:00 до 21:00',
+        loc_order_btn: 'Оставить заявку',
+        faq_heading: 'Популярные вопросы',
+        footer_promo: 'Промокод на первый заказ: <span class="text-brand-600 font-extrabold">CLEAN10</span> (−10%)',
+        drawer_title: 'Ваш заказ',
+        drawer_sub: 'Промокод CLEAN10 даёт скидку 10%',
+        promo_apply: 'Применить',
+        promo_ok: 'Промокод CLEAN10 применён (−10%)!',
+        promo_err: 'Неверный промокод. Попробуйте CLEAN10.',
+        discount_label: 'Скидка (10%)',
+        total_label: 'Итого к оплате',
+        checkout_btn: 'Оформить заявку',
+        success_title: 'Заявка принята!',
+        success_desc: 'Менеджер CLEANLAB свяжется с вами в течение 10 минут для подтверждения времени.',
+        success_close: 'Вернуться на сайт',
+        cart_empty: 'Список услуг пока пуст. Добавьте услуги из каталога или калькулятора.',
+        toast_added: 'Добавлено в заказ:',
+        toast_select_first: 'Выберите хотя бы одну позицию (+)',
+        name_ph: 'Ваше имя',
+        phone_ph: 'Телефон / WhatsApp (+7 ...)',
+        addr_ph: 'Адрес выезда или комментарий',
+      },
+      KZ: {
+        header_sub: 'Түркістан · Клининг және Химтазалау',
+        nav_services: 'Қызметтер',
+        nav_calc: 'Калькулятор',
+        nav_how: 'Қалай жұмыс істейміз',
+        nav_address: 'Мекенжай',
+        nav_faq: 'Сұрақтар',
+        cart_btn: 'Тапсырыс',
+        hero_badge: 'Түркістан қ. · Жаңа қала, 9, 42/2',
+        hero_title: 'Үйдің, жиһаздың, киім мен аяқ киімнің мінсіз тазалығы',
+        hero_fmt1_title: 'Түркістан бойынша көшпелі бригада',
+        hero_fmt1_desc: 'Пәтерлер мен үйлерді кәсіби тазалау, сондай-ақ диван, матрас және кілемдерді үйіңізде терең химтазалау.',
+        hero_fmt2_title: 'Біздің сервисте · Жаңа қала, 9, 42/2',
+        hero_fmt2_desc: 'Сырт киімдерді, костюмдерді, кроссовкалар мен сөмкелерді ұқыпты химтазалау және қорғаныс сіңдіруі.',
+        hero_cta1: 'Құнын есептеу',
+        hero_cta2: 'Қызмет таңдау',
+        trust_1: 'Эко-химия 0+',
+        trust_2: '60 мин ішінде келу',
+        trust_3: 'Kärcher техникасы',
+        trust_4: 'Тазалық кепілдігі',
+        calc_eyebrow: 'Онлайн-калькулятор',
+        calc_heading: 'Нақты бағаны 30 секундта біліңіз',
+        calc_tab1: '🏠 Үй тазалау (Шығу)',
+        calc_tab2: '🛋️ Жиһаз және кілем (Шығу)',
+        calc_tab3: '👟 Киім және аяқ киім (Сервисте)',
+        calc_area_label: 'Пәтер немесе үй ауданы',
+        calc_type_label: 'Тазалау түрі',
+        type_maint: 'Қолдаушы тазалау',
+        type_gen: 'Толық (Генералды)',
+        type_repair: 'Жөндеуден кейін',
+        calc_extras_label: 'Қосымша қызметтер',
+        extra_windows: 'Терезе жуу',
+        extra_fridge: 'Тоңазытқыш іші',
+        extra_oven: 'Пеш/сорғыш',
+        calc_total_label: 'Алдын ала есептеу',
+        calc_add_btn: '+ Есепті тапсырысқа қосу',
+        calc_add_items_btn: '+ Тапсырысқа қосу',
+        clothes_notice: 'Киім мен аяқ киімді қабылдау сервисімізде жүргізіледі: Түркістан қ., Жаңа қала, 9, 42/2.',
+        serv_eyebrow: 'Прайс-лист және қызметтер',
+        serv_heading: 'CLEANLAB қызметтер каталогы',
+        filter_all: 'Барлығы',
+        filter_home: 'Клининг (Шығу)',
+        filter_furniture: 'Жиһаз және кілем',
+        filter_clothes: 'Киім мен аяқ киім (Сервисте)',
+        badge_mobile: 'Үйге бару',
+        badge_service: 'Сервисте',
+        add_to_order: '+ Тапсырысқа',
+        how_eyebrow: 'Қарапайым процесс',
+        how_heading: 'Біз қалай жұмыс істейміз',
+        step1_t: 'Өтінім немесе есептеу',
+        step1_d: 'Каталогтан қызмет таңдаңыз немесе калькуляторда 30 секундта құнын есептеңіз.',
+        step2_t: 'Келу немесе қабылдау',
+        step2_d: 'Бригада үйіңізге барады (клининг, жиһаз, кілем) немесе заттарды Жаңа қала, 9, 42/2 мекенжайына әкелесіз.',
+        step3_t: 'Терең тазалау',
+        step3_d: 'Kärcher техникасымен және балалар мен жануарларға қауіпсіз эко-химиямен тазалаймыз.',
+        step4_t: 'Тексеру және төлем',
+        step4_d: 'Нәтиженің тазалығын тексеріп, тек қабылдағаннан кейін ғана төлем жасайсыз.',
+        loc_eyebrow: 'Түркістандағы байланыс',
+        loc_heading: 'Біздің сервис және шығу аймағы',
+        loc_addr: 'Түркістан қ., Жаңа қала ш/а, 9, 42/2',
+        loc_addr_note: 'Киім, аяқ киім және сөмке қабылдау орны',
+        loc_mobile_note: 'Түркістан бойынша көшпелі бригада: үй тазалау, жиһаз және кілем химтазалау.',
+        loc_hours: 'Күн сайын 09:00-ден 21:00-ге дейін',
+        loc_order_btn: 'Өтінім қалдыру',
+        faq_heading: 'Жиі қойылатын сұрақтар',
+        footer_promo: 'Алғашқы тапсырысқа промокод: <span class="text-brand-600 font-extrabold">CLEAN10</span> (−10%)',
+        drawer_title: 'Сіздің тапсырысыңыз',
+        drawer_sub: 'CLEAN10 промокоды 10% жеңілдік береді',
+        promo_apply: 'Қолдану',
+        promo_ok: 'CLEAN10 промокоды іске қосылды (−10%)!',
+        promo_err: 'Промокод қате. CLEAN10 деп жазып көріңіз.',
+        discount_label: 'Жеңілдік (10%)',
+        total_label: 'Төлем сомасы',
+        checkout_btn: 'Тапсырысты рәсімдеу',
+        success_title: 'Өтінім қабылданды!',
+        success_desc: 'CLEANLAB менеджері уақытты нақтылау үшін 10 минут ішінде хабарласады.',
+        success_close: 'Сайтқа оралу',
+        cart_empty: 'Тапсырыс тізімі әзірге бос. Каталогтан немесе калькулятордан қызмет қосыңыз.',
+        toast_added: 'Тапсырысқа қосылды:',
+        toast_select_first: 'Кемінде бір қызмет таңдаңыз (+)',
+        name_ph: 'Сіздің атыңыз',
+        phone_ph: 'Телефон / WhatsApp (+7 ...)',
+        addr_ph: 'Мекенжай немесе түсініктеме',
+      },
+    };
+
+    const FURNITURE_ITEMS = [
+      { id: 'f_sofa3', ru: 'Диван 3-местный', kz: '3 орынды диван', price: 12000, unit: '', qty: 0 },
+      { id: 'f_corner', ru: 'Угловой диван', kz: 'Бұрыштық диван', price: 16500, unit: '', qty: 0 },
+      { id: 'f_chair', ru: 'Кресло', kz: 'Кресло', price: 4500, unit: '', qty: 0 },
+      { id: 'f_mattress', ru: 'Матрас 2-спальный', kz: '2 орынды матрас', price: 11000, unit: '', qty: 0 },
+      { id: 'f_carpet', ru: 'Ковёр (за 1 м²)', kz: 'Кілем (1 м² үшін)', price: 1200, unit: 'м²', qty: 0 },
+      { id: 'f_stool', ru: 'Стул мягкий', kz: 'Жұмсақ орындық', price: 1500, unit: '', qty: 0 },
+    ];
+
+    const CLOTHES_ITEMS = [
+      { id: 'c_jacket', ru: 'Пуховик / Куртка', kz: 'Күртеше / Пуховик', price: 5500, qty: 0 },
+      { id: 'c_coat', ru: 'Пальто', kz: 'Пальто', price: 6500, qty: 0 },
+      { id: 'c_suit', ru: 'Деловой костюм', kz: 'Іскерлік костюм', price: 5000, qty: 0 },
+      { id: 'c_sneakers', ru: 'Кроссовки (базовая чистка)', kz: 'Кроссовка (базалық)', price: 4000, qty: 0 },
+      { id: 'c_shoes_pro', ru: 'Обувь глубокая + защита', kz: 'Аяқ киім терең + қорғаныс', price: 6500, qty: 0 },
+      { id: 'c_bag', ru: 'Сумка / Рюкзак', kz: 'Сөмке / Рюкзак', price: 4500, qty: 0 },
+    ];
+
+    const SERVICES = [
+      {
+        id: 'srv_maint',
+        cat: 'home',
+        mode: 'mobile',
+        ru: 'Поддерживающая уборка (до 60 м²)',
+        kz: 'Қолдаушы тазалау (60 м² дейін)',
+        desc_ru: 'Влажная уборка полов, удаление пыли со всех поверхностей, санузел и кухня.',
+        desc_kz: 'Еденді ылғалды жуу, шаң сүрту, жуыну бөлмесі мен ас үйді тазалау.',
+        price: 27000,
+      },
+      {
+        id: 'srv_gen',
+        cat: 'home',
+        mode: 'mobile',
+        ru: 'Генеральная уборка (до 60 м²)',
+        kz: 'Генералды тазалау (60 м² дейін)',
+        desc_ru: 'Глубокая очистка кухни от жира, налёта в ванной, плинтусов, дверей и всех труднодоступных зон.',
+        desc_kz: 'Ас үй майынан, ванна қағынан, есіктер мен қол жетімсіз жерлерден терең тазалау.',
+        price: 48000,
+      },
+      {
+        id: 'srv_repair',
+        cat: 'home',
+        mode: 'mobile',
+        ru: 'Уборка после ремонта (до 60 м²)',
+        kz: 'Жөндеуден кейінгі тазалау',
+        desc_ru: 'Удаление строительной пыли промышленным пылесосом, следов краски, скотча и затирки.',
+        desc_kz: 'Құрылыс шаңын өнеркәсіптік шаңсорғышпен, бояу мен скотч іздерін толық кетіру.',
+        price: 66000,
+      },
+      {
+        id: 'srv_sofa',
+        cat: 'furniture',
+        mode: 'mobile',
+        ru: 'Химчистка 3-местного дивана',
+        kz: '3 орынды диван химтазалау',
+        desc_ru: 'Экстракторная чистка Kärcher: вывод пятен, запахов, пылевых клещей прямо у вас дома.',
+        desc_kz: 'Kärcher экстракторымен үйіңізде дақтарды, иістерді және шаң кенелерін кетіру.',
+        price: 12000,
+      },
+      {
+        id: 'srv_corner',
+        cat: 'furniture',
+        mode: 'mobile',
+        ru: 'Химчистка углового дивана',
+        kz: 'Бұрыштық диван химтазалау',
+        desc_ru: 'Полная проработка всех секций, подушек и выдвижного спального места с ополаскиванием.',
+        desc_kz: 'Барлық бөліктерді, жастықтар мен жатын орнын толық терең тазалау.',
+        price: 16500,
+      },
+      {
+        id: 'srv_mattress',
+        cat: 'furniture',
+        mode: 'mobile',
+        ru: 'Химчистка 2-спального матраса',
+        kz: '2 орынды матрас химтазалау',
+        desc_ru: 'Двусторонняя антибактериальная обработка и удаление сложных биологических пятен.',
+        desc_kz: 'Екі жақты антибактериалды өңдеу және күрделі дақтарды кетіру.',
+        price: 11000,
+      },
+      {
+        id: 'srv_jacket',
+        cat: 'clothes',
+        mode: 'service',
+        ru: 'Химчистка пуховика / куртки',
+        kz: 'Пуховик / күртеше химтазалау',
+        desc_ru: 'Бережная чистка без сбивания пуха, удаление засаленности на манжетах и воротнике.',
+        desc_kz: 'Мамығын бүлдірмей, жеңі мен жағасындағы дақтарды ұқыпты кетіру.',
+        price: 5500,
+      },
+      {
+        id: 'srv_sneakers',
+        cat: 'clothes',
+        mode: 'service',
+        ru: 'Глубокая чистка обуви + защита',
+        kz: 'Аяқ киімді терең тазалау + қорғаныс',
+        desc_ru: 'Чистка замши, нубука, кожи и текстиля, отбеливание подошвы и водоотталкивающая пропитка.',
+        desc_kz: 'Күдері, былғары және матаны тазалау, табанын ағарту және судан қорғау.',
+        price: 6500,
+      },
+      {
+        id: 'srv_coat',
+        cat: 'clothes',
+        mode: 'service',
+        ru: 'Химчистка пальто или костюма',
+        kz: 'Пальто немесе костюм химтазалау',
+        desc_ru: 'Деликатная обработка шерсти и кашемира с финальным отпариванием и сохранением формы.',
+        desc_kz: 'Жүн мен кашемирді нәзік тазалап, пішінін сақтай отырып бумен үтіктеу.',
+        price: 6500,
+      },
+    ];
+
+    const FAQ_DATA = [
+      {
+        q_ru: 'Безопасна ли химия для детей и домашних животных?',
+        q_kz: 'Химия балалар мен үй жануарларына қауіпсіз бе?',
+        a_ru: 'Да, мы используем только сертифицированные гипоаллергенные средства (0+), которые полностью вымываются из ткани экстрактором и не оставляют резкого запаха.',
+        a_kz: 'Иә, біз тек сертификатталған гипоаллергенді (0+) құралдарды қолданамыз. Олар матадан толық шайылып, иіс қалдырмайды.',
+      },
+      {
+        q_ru: 'Сколько времени сохнет диван или матрас после химчистки?',
+        q_kz: 'Химтазалаудан кейін диван немесе матрас қанша уақыт кебеді?',
+        a_ru: 'После мощного отжима экстрактором Kärcher мебель остаётся лишь слегка влажной и полностью высыхает естественным образом за 4–6 часов.',
+        a_kz: 'Kärcher экстракторымен сорып алғаннан кейін жиһаз 4–6 сағат ішінде толық кебеді.',
+      },
+      {
+        q_ru: 'Сколько дней занимает химчистка кроссовок и пуховиков?',
+        q_kz: 'Кроссовка мен пуховиктерді тазалау қанша күн алады?',
+        a_ru: 'Стандартный срок в нашем сервисе на Жаңа қала, 9, 42/2 — 2–3 дня (включая деликатную сушку в специальной камере). Возможна экспресс-чистка за 24 часа.',
+        a_kz: 'Жаңа қала, 9, 42/2 сервисінде стандартты мерзім — 2–3 күн. 24 сағатта жедел тазалау да қолжетімді.',
+      },
+      {
+        q_ru: 'Нужно ли везти ковёр или вы чистите на месте?',
+        q_kz: 'Кілемді апару керек пе, әлде үйде тазалайсыздар ма?',
+        a_ru: 'Мы чистим ковры и ковролин прямо у вас дома с выездом бригады. В сервис нужно приносить только одежду, обувь и сумки.',
+        a_kz: 'Кілемдерді бригада үйіңізге келіп тазалайды. Сервиске тек киім, аяқ киім және сөмкелерді әкелесіз.',
+      },
+      {
+        q_ru: 'Как происходит оплата заказа?',
+        q_kz: 'Тапсырыс төлемі қалай жүзеге асады?',
+        a_ru: 'Оплата производится только после выполнения работы и вашей проверки результата — наличными, переводом или через Kaspi QR.',
+        a_kz: 'Төлем тек жұмыс аяқталып, нәтижені тексергеннен кейін — қолма-қол немесе Kaspi QR арқылы жасалады.',
+      },
+    ];
+
+    /* ------------------------------------------------------------
+       2. VISUAL EFFECTS: LAVA PARALLAX + SIDE SOAP FOAM & BUBBLES
+       ------------------------------------------------------------ */
+    function initLavaParallax() {
+      const orbs = Array.from(document.querySelectorAll('.lava-orb'));
+      let currentScroll = window.scrollY;
+      let targetScroll = window.scrollY;
+
+      window.addEventListener('scroll', () => {
+        targetScroll = window.scrollY;
+      }, { passive: true });
+
+      function animate() {
+        currentScroll += (targetScroll - currentScroll) * 0.08;
+        for (const orb of orbs) {
+          const speed = parseFloat(orb.dataset.speed || '0.05');
+          const yOffset = Math.max(-110, Math.min(110, currentScroll * speed));
+          orb.style.transform = `translate3d(0, ${yOffset.toFixed(1)}px, 0)`;
+        }
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    }
+
+    function buildSideFoam(railId, isRight) {
+      const rail = document.getElementById(railId);
+      if (!rail) return;
+
+      // Flowing foam puff layer
+      const stream = document.createElement('div');
+      stream.className = 'foam-stream';
+
+      const puffCount = 24;
+      for (let i = 0; i < puffCount; i++) {
+        const puff = document.createElement('div');
+        puff.className = 'foam-puff';
+        const size = 28 + Math.round(Math.random() * 34);
+        const topPct = (i / puffCount) * 105 - 3;
+        const edgeOffset = -(size * 0.45) + (Math.random() * 14);
+        puff.style.width = `${size}px`;
+        puff.style.height = `${size}px`;
+        puff.style.top = `${topPct}%`;
+        if (isRight) {
+          puff.style.right = `${edgeOffset}px`;
+          puff.style.setProperty('--sway', `${-(3 + Math.random() * 4)}px`);
+        } else {
+          puff.style.left = `${edgeOffset}px`;
+          puff.style.setProperty('--sway', `${3 + Math.random() * 4}px`);
+        }
+        puff.style.setProperty('--pulse-dur', `${4.5 + Math.random() * 4}s`);
+        puff.style.animationDelay = `${-(Math.random() * 6)}s`;
+        stream.appendChild(puff);
+      }
+      rail.appendChild(stream);
+
+      // Rising iridescent soap bubbles
+      const bubbleCount = 12;
+      for (let j = 0; j < bubbleCount; j++) {
+        const b = document.createElement('div');
+        b.className = 'soap-bubble';
+        const bSize = 10 + Math.round(Math.random() * 18);
+        const posPct = 10 + Math.random() * 65;
+        b.style.width = `${bSize}px`;
+        b.style.height = `${bSize}px`;
+        if (isRight) {
+          b.style.right = `${posPct}%`;
+          b.style.setProperty('--drift', `${-(8 + Math.random() * 10)}px`);
+        } else {
+          b.style.left = `${posPct}%`;
+          b.style.setProperty('--drift', `${8 + Math.random() * 10}px`);
+        }
+        b.style.setProperty('--rise-dur', `${9 + Math.random() * 9}s`);
+        b.style.animationDelay = `${-(Math.random() * 14)}s`;
+        rail.appendChild(b);
+      }
+    }
+
+    /* ------------------------------------------------------------
+       3. HELPERS & LANGUAGE SWITCHER
+       ------------------------------------------------------------ */
+    function formatPrice(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₸';
+    }
+
+    function t(key) {
+      return I18N[currentLang][key] || key;
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      const btnRu = document.getElementById('btn-lang-ru');
+      const btnKz = document.getElementById('btn-lang-kz');
+      if (lang === 'RU') {
+        btnRu.className = 'px-2.5 py-1 text-xs font-bold rounded-lg transition-all bg-white text-gray-900 shadow-sm';
+        btnKz.className = 'px-2.5 py-1 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-900';
+      } else {
+        btnKz.className = 'px-2.5 py-1 text-xs font-bold rounded-lg transition-all bg-white text-gray-900 shadow-sm';
+        btnRu.className = 'px-2.5 py-1 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-900';
+      }
+
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[lang][key] !== undefined) {
+          el.innerHTML = I18N[lang][key];
+        }
+      });
+
+      document.getElementById('cust-name').placeholder = t('name_ph');
+      document.getElementById('cust-phone').placeholder = t('phone_ph');
+      document.getElementById('cust-address').placeholder = t('addr_ph');
+
+      renderSteppers('furniture', FURNITURE_ITEMS, 'furniture-stepper-grid');
+      renderSteppers('clothes', CLOTHES_ITEMS, 'clothes-stepper-grid');
+      renderServices();
+      renderFAQ();
+      renderCart();
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast-enter px-4 py-2.5 rounded-2xl bg-gray-900 text-white text-xs sm:text-sm font-bold shadow-xl flex items-center gap-2';
+      toast.innerHTML = `<span class="text-brand-400">🫧</span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 2400);
+    }
+
+    /* ------------------------------------------------------------
+       4. CALCULATOR LOGIC (3 TABS)
+       ------------------------------------------------------------ */
+    function switchCalcTab(tabName) {
+      ['home', 'furniture', 'clothes'].forEach((name) => {
+        const panel = document.getElementById(`calc-panel-${name}`);
+        const btn = document.getElementById(`calc-tab-${name}`);
+        if (name === tabName) {
+          panel.classList.remove('hidden');
+          btn.className = 'calc-tab-btn px-4 py-3 rounded-xl text-sm font-bold transition-all bg-white text-gray-900 shadow-sm';
+        } else {
+          panel.classList.add('hidden');
+          btn.className = 'calc-tab-btn px-4 py-3 rounded-xl text-sm font-bold transition-all text-gray-600 hover:text-gray-900';
+        }
+      });
+    }
+
+    function updateHomeCalc() {
+      const area = parseInt(document.getElementById('area-slider').value, 10);
+      document.getElementById('area-value').textContent = area;
+      const rate = parseInt(document.querySelector('input[name="clean-type"]:checked').value, 10);
+      let extrasSum = 0;
+      document.querySelectorAll('.home-extra:checked').forEach((cb) => {
+        extrasSum += parseInt(cb.value, 10);
+      });
+      const total = area * rate + extrasSum;
+      document.getElementById('home-calc-total').textContent = formatPrice(total);
+      return total;
+    }
+
+    function addHomeCalcToCart() {
+      const area = parseInt(document.getElementById('area-slider').value, 10);
+      const checkedRadio = document.querySelector('input[name="clean-type"]:checked');
+      const key = checkedRadio.getAttribute('data-key');
+      const typeNames = {
+        maintenance: { RU: 'Поддерживающая уборка', KZ: 'Қолдаушы тазалау' },
+        general: { RU: 'Генеральная уборка', KZ: 'Генералды тазалау' },
+        repair: { RU: 'Уборка после ремонта', KZ: 'Жөндеуден кейінгі тазалау' },
+      };
+      const extrasRu = [];
+      const extrasKz = [];
+      document.querySelectorAll('.home-extra:checked').forEach((cb) => {
+        extrasRu.push(cb.getAttribute('data-label-ru'));
+        extrasKz.push(cb.getAttribute('data-label-kz'));
+      });
+
+      const total = updateHomeCalc();
+      const titleRu = `${typeNames[key].RU} (${area} м²)${extrasRu.length ? ' + ' + extrasRu.join(', ') : ''}`;
+      const titleKz = `${typeNames[key].KZ} (${area} м²)${extrasKz.length ? ' + ' + extrasKz.join(', ') : ''}`;
+
+      addToCart({
+        id: 'calc_home_' + Date.now(),
+        ru: titleRu,
+        kz: titleKz,
+        price: total,
+        mode: 'mobile',
+      });
+    }
+
+    function renderSteppers(group, list, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = list
+        .map(
+          (item, idx) => `
+          <div class="flex items-center justify-between gap-3 p-4 rounded-2xl border border-gray-200 bg-white/85">
+            <div>
+              <div class="font-bold text-sm text-gray-900">${currentLang === 'RU' ? item.ru : item.kz}</div>
+              <div class="text-xs font-extrabold text-brand-600 mt-0.5">${formatPrice(item.price)}${item.unit ? ' / ' + item.unit : ''}</div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" onclick="changeStepper('${group}', ${idx}, -1)" class="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold transition-colors">−</button>
+              <span class="w-7 text-center font-extrabold text-sm text-gray-900">${item.qty}</span>
+              <button type="button" onclick="changeStepper('${group}', ${idx}, 1)" class="w-8 h-8 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-extrabold transition-colors">+</button>
+            </div>
+          </div>`
+        )
+        .join('');
+      updateStepperTotal(group);
+    }
+
+    function changeStepper(group, idx, delta) {
+      const list = group === 'furniture' ? FURNITURE_ITEMS : CLOTHES_ITEMS;
+      list[idx].qty = Math.max(0, list[idx].qty + delta);
+      renderSteppers(group, list, group === 'furniture' ? 'furniture-stepper-grid' : 'clothes-stepper-grid');
+    }
+
+    function updateStepperTotal(group) {
+      const list = group === 'furniture' ? FURNITURE_ITEMS : CLOTHES_ITEMS;
+      const total = list.reduce((sum, item) => sum + item.price * item.qty, 0);
+      document.getElementById(`${group}-calc-total`).textContent = formatPrice(total);
+    }
+
+    function addStepperCalcToCart(group) {
+      const list = group === 'furniture' ? FURNITURE_ITEMS : CLOTHES_ITEMS;
+      const selected = list.filter((i) => i.qty > 0);
+      if (selected.length === 0) {
+        showToast(t('toast_select_first'));
+        return;
+      }
+      selected.forEach((item) => {
+        const suffix = item.unit ? ` (${item.qty} ${item.unit})` : ` × ${item.qty}`;
+        addToCart({
+          id: `${item.id}_${Date.now()}_${Math.random()}`,
+          ru: item.ru + suffix,
+          kz: item.kz + suffix,
+          price: item.price * item.qty,
+          mode: group === 'furniture' ? 'mobile' : 'service',
+        });
+        item.qty = 0;
+      });
+      renderSteppers(group, list, group === 'furniture' ? 'furniture-stepper-grid' : 'clothes-stepper-grid');
+    }
+
+    /* ------------------------------------------------------------
+       5. SERVICES CATALOG & FILTERING
+       ------------------------------------------------------------ */
+    function filterServices(cat) {
+      currentFilter = cat;
+      ['all', 'home', 'furniture', 'clothes'].forEach((id) => {
+        const btn = document.getElementById(`filter-${id}`);
+        if (id === cat) {
+          btn.className = 'filter-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gray-900 text-white transition-all';
+        } else {
+          btn.className = 'filter-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/85 text-gray-700 border border-gray-200 hover:border-brand-400 transition-all';
+        }
+      });
+      renderServices();
+    }
+
+    function renderServices() {
+      const grid = document.getElementById('services-grid');
+      const filtered = currentFilter === 'all' ? SERVICES : SERVICES.filter((s) => s.cat === currentFilter);
+
+      grid.innerHTML = filtered
+        .map((s) => {
+          const isMobile = s.mode === 'mobile';
+          const badgeClass = isMobile
+            ? 'bg-brand-50 text-brand-700 border border-brand-200'
+            : 'bg-gray-900 text-white';
+          const badgeText = isMobile ? t('badge_mobile') : t('badge_service');
+          const title = currentLang === 'RU' ? s.ru : s.kz;
+          const desc = currentLang === 'RU' ? s.desc_ru : s.desc_kz;
+
+          return `
+            <div class="glass-card rounded-2xl p-5 flex flex-col justify-between hover:-translate-y-1 transition-transform duration-200">
+              <div>
+                <span class="inline-block px-3 py-1 rounded-full text-[11px] font-bold ${badgeClass} mb-3">${badgeText}</span>
+                <h3 class="font-display font-bold text-lg text-gray-900 leading-snug mb-2">${title}</h3>
+                <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-5">${desc}</p>
+              </div>
+              <div class="flex items-center justify-between gap-3 pt-4 border-t border-gray-100">
+                <span class="font-display font-extrabold text-lg text-gray-900">${formatPrice(s.price)}</span>
+                <button onclick="addServiceById('${s.id}')" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all active:scale-95">
+                  ${t('add_to_order')}
+                </button>
+              </div>
+            </div>`;
+        })
+        .join('');
+    }
+
+    function addServiceById(id) {
+      const srv = SERVICES.find((s) => s.id === id);
+      if (!srv) return;
+      addToCart({
+        id: srv.id + '_' + Date.now(),
+        ru: srv.ru,
+        kz: srv.kz,
+        price: srv.price,
+        mode: srv.mode,
+      });
+    }
+
+    /* ------------------------------------------------------------
+       6. FAQ ACCORDION
+       ------------------------------------------------------------ */
+    function renderFAQ() {
+      const container = document.getElementById('faq-list');
+      container.innerHTML = FAQ_DATA.map(
+        (item, i) => `
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <button onclick="toggleFAQ(${i})" class="w-full px-5 sm:px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-gray-900 hover:bg-white/60 transition-colors">
+            <span>${currentLang === 'RU' ? item.q_ru : item.q_kz}</span>
+            <span id="faq-icon-${i}" class="text-brand-600 font-extrabold text-xl transition-transform duration-200">+</span>
+          </button>
+          <div id="faq-body-${i}" class="hidden px-5 sm:px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-100/80 pt-3">
+            ${currentLang === 'RU' ? item.a_ru : item.a_kz}
+          </div>
+        </div>`
+      ).join('');
+    }
+
+    function toggleFAQ(idx) {
+      const body = document.getElementById(`faq-body-${idx}`);
+      const icon = document.getElementById(`faq-icon-${idx}`);
+      const isHidden = body.classList.contains('hidden');
+      body.classList.toggle('hidden');
+      icon.textContent = isHidden ? '−' : '+';
+    }
+
+    /* ------------------------------------------------------------
+       7. CART / ORDER DRAWER & CHECKOUT
+       ------------------------------------------------------------ */
+    function openCart() {
+      document.getElementById('cart-backdrop').classList.remove('hidden');
+      document.getElementById('cart-drawer').classList.remove('translate-x-full');
+      document.body.style.overflow = 'hidden';
+      renderCart();
+    }
+
+    function closeCart() {
+      document.getElementById('cart-backdrop').classList.add('hidden');
+      document.getElementById('cart-drawer').classList.add('translate-x-full');
+      document.body.style.overflow = '';
+    }
+
+    function addToCart(item) {
+      cart.push(item);
+      updateCartBadge();
+      renderCart();
+      const label = currentLang === 'RU' ? item.ru : item.kz;
+      showToast(`${t('toast_added')} ${label}`);
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartBadge();
+      renderCart();
+    }
+
+    function updateCartBadge() {
+      document.getElementById('cart-badge').textContent = cart.length;
+    }
+
+    function applyPromo() {
+      const code = document.getElementById('promo-input').value.trim().toUpperCase();
+      const msg = document.getElementById('promo-msg');
+      msg.classList.remove('hidden');
+      if (code === 'CLEAN10') {
+        promoActive = true;
+        msg.className = 'text-xs font-bold mt-2 text-emerald-600';
+        msg.textContent = t('promo_ok');
+      } else {
+        promoActive = false;
+        msg.className = 'text-xs font-bold mt-2 text-rose-600';
+        msg.textContent = t('promo_err');
+      }
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart-items-container');
+      const promoSec = document.getElementById('cart-promo-section');
+      const totalSec = document.getElementById('cart-totals-section');
+      const formSec = document.getElementById('checkout-form');
+      const successBox = document.getElementById('order-success-box');
+
+      if (!successBox.classList.contains('hidden')) return;
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-sm text-gray-500">
+            <div class="text-2xl mb-2">🫧</div>
+            ${t('cart_empty')}
+          </div>`;
+        promoSec.classList.add('hidden');
+        totalSec.classList.add('hidden');
+        formSec.classList.add('hidden');
+        return;
+      }
+
+      promoSec.classList.remove('hidden');
+      totalSec.classList.remove('hidden');
+      formSec.classList.remove('hidden');
+
+      container.innerHTML = `<div class="space-y-2.5">` + cart
+        .map((item, idx) => {
+          const badge = item.mode === 'mobile' ? t('badge_mobile') : t('badge_service');
+          return `
+            <div class="flex items-start justify-between gap-3 p-3.5 rounded-2xl bg-gray-50 border border-gray-200/80">
+              <div>
+                <span class="inline-block text-[10px] font-bold uppercase tracking-wider text-brand-600 mb-0.5">${badge}</span>
+                <div class="text-sm font-bold text-gray-900 leading-snug">${currentLang === 'RU' ? item.ru : item.kz}</div>
+                <div class="text-xs font-extrabold text-gray-600 mt-1">${formatPrice(item.price)}</div>
+              </div>
+              <button onclick="removeFromCart(${idx})" class="w-7 h-7 rounded-lg bg-white hover:bg-rose-50 text-gray-400 hover:text-rose-600 border border-gray-200 flex items-center justify-center text-xs font-bold shrink-0 transition-colors" aria-label="Удалить">✕</button>
+            </div>`;
+        })
+        .join('') + `</div>`;
+
+      const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+      const discount = promoActive ? Math.round(subtotal * 0.1) : 0;
+      const finalTotal = subtotal - discount;
+
+      const discRow = document.getElementById('cart-discount-row');
+      if (discount > 0) {
+        discRow.classList.remove('hidden');
+        document.getElementById('cart-discount-val').textContent = '−' + formatPrice(discount);
+      } else {
+        discRow.classList.add('hidden');
+      }
+      document.getElementById('cart-total-val').textContent = formatPrice(finalTotal);
+    }
+
+    function launchCelebrationBubbles() {
+      for (let i = 0; i < 24; i++) {
+        const b = document.createElement('div');
+        b.className = 'celebration-bubble';
+        const size = 14 + Math.random() * 26;
+        b.style.width = `${size}px`;
+        b.style.height = `${size}px`;
+        b.style.left = `${Math.random() * 96}%`;
+        b.style.animationDelay = `${Math.random() * 0.6}s`;
+        document.body.appendChild(b);
+        setTimeout(() => b.remove(), 3200);
+      }
+    }
+
+    function submitOrder(e) {
+      e.preventDefault();
+      const name = document.getElementById('cust-name').value.trim();
+      const phone = document.getElementById('cust-phone').value.trim();
+      const errEl = document.getElementById('form-error');
+
+      if (!name || !phone) {
+        errEl.textContent = currentLang === 'RU' ? 'Заполните имя и телефон.' : 'Атыңыз бен телефоныңызды жазыңыз.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      errEl.classList.add('hidden');
+      cart = [];
+      promoActive = false;
+      updateCartBadge();
+
+      document.getElementById('cart-items-container').innerHTML = '';
+      document.getElementById('cart-promo-section').classList.add('hidden');
+      document.getElementById('cart-totals-section').classList.add('hidden');
+      document.getElementById('checkout-form').classList.add('hidden');
+      document.getElementById('order-success-box').classList.remove('hidden');
+      document.getElementById('checkout-form').reset();
+      document.getElementById('promo-input').value = '';
+      document.getElementById('promo-msg').classList.add('hidden');
+
+      launchCelebrationBubbles();
+    }
+
+    function resetAfterSuccess() {
+      document.getElementById('order-success-box').classList.add('hidden');
+      closeCart();
+      renderCart();
+    }
+
+    /* ------------------------------------------------------------
+       8. INITIALIZATION
+       ------------------------------------------------------------ */
+    window.addEventListener('DOMContentLoaded', () => {
+      initLavaParallax();
+      buildSideFoam('left-foam-rail', false);
+      buildSideFoam('right-foam-rail', true);
+      updateHomeCalc();
+      renderSteppers('furniture', FURNITURE_ITEMS, 'furniture-stepper-grid');
+      renderSteppers('clothes', CLOTHES_ITEMS, 'clothes-stepper-grid');
+      renderServices();
+      renderFAQ();
+      renderCart();
+    });
+  </script>
+</body>
+</html>
